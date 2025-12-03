@@ -26,12 +26,42 @@ float vz = 0;
   js["y"] = vy;
   js["z"] = vyaw;
 */
+
+
+void update_velocities(float x, float z){
+    vx = x;
+    vz = z;
+}
 void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
      
-    if (msg->buttons[3] == 1) {
-        action = MOVE;       
-        RCLCPP_INFO(my_logger, "Mode: MOVE");
+    //go ahead
+    if (msg->axes[1] > 0.4) {
+        action = MOVE;  
+        update_velocities(0.3,0);   
+        RCLCPP_INFO(my_logger, "Moving Straight");
     }
+
+    // backwards
+    else if (msg->axes[1] < -0.4) {
+        action = MOVE;       
+        RCLCPP_INFO(my_logger, "Moving Backwards");
+        update_velocities(-0.3,0);  
+    }
+    // left 
+    else if(msg->axes[3] > 0.4) {
+        action = MOVE;  
+        update_velocities(0,0.6);   
+        RCLCPP_INFO(my_logger, "Moving Left");
+    }
+    
+    //right
+    else if(msg->axes[3] < -0.4) {
+        action = MOVE;  
+        update_velocities(0,-0.6);   
+        RCLCPP_INFO(my_logger, "Moving Right");
+    }
+
+
 
    
     else if (msg->buttons[0] == 1) {
@@ -40,7 +70,7 @@ void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
     }
     else{
         action = STOP_MOVE;
-        RCLCPP_INFO(my_logger, "No buttons detected");
+        //RCLCPP_INFO(my_logger, "No buttons detected");
     }
 }
 
