@@ -44,7 +44,7 @@ void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
     }
 }
 
-void RobotControl(){
+void RobotControl(unitree_api::msg::Request req,std::shared_ptr<SportClient> sport_client){
     switch(action){
         case MOVE:
             sport_client->Move(req,vx,0,vz);
@@ -70,10 +70,10 @@ int main(int argc, char* argv[]){
      // Servicio (cliente sport)
     sport_client = std::make_shared<SportClient>(node.get()); // the srv is waiting for:  SportClient::SportClient(rclcpp::Node *node)
 
-    auto subscriber = node -> create_subscriber<sensor_msgs::msg::Joy>("joy",10,JoyCallback);
+    auto subscriber = node -> create_subscription<sensor_msgs::msg::Joy>("joy",10,JoyCallback);
 
     while(rclcpp::ok()){
-        RobotControl();
+        RobotControl(req,sport_client);
         rclcpp::spin_some(node);
     }
     rclcpp::shutdown();
