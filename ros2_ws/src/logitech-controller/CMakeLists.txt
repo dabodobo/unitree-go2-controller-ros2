@@ -53,6 +53,11 @@ find_package(sensor_msgs REQUIRED)
 
 #ament_target_dependencies(record_bag ${DEPENDENCY_LIST})
 #ament_target_dependencies(mando ${DEPENDENCY_LIST})
+add_executable(controller src/controller.cpp)
+target_compile_features(controller PRIVATE cxx_std_20)
+ament_target_dependencies(controller ${DEPENDENCY_LIST})
+
+
 
 
 find_package(yaml-cpp QUIET)
@@ -78,8 +83,13 @@ if(yaml-cpp_FOUND)
     endif()
 endif()
 
-install(TARGETS g1_audio_client_example)
-
+#install(TARGETS g1_audio_client_example)
+install(TARGETS
+          controller
+          DESTINATION lib/${PROJECT_NAME}
+  )
+ install(DIRECTORY launch
+          DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

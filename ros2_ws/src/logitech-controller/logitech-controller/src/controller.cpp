@@ -16,7 +16,7 @@ enum action = {
 }
 
 
-float vx = 0;
+float vx = 0.3;
 float vz = 0;
 
 /*
