@@ -53,7 +53,7 @@ find_package(sensor_msgs REQUIRED)
 
 #ament_target_dependencies(record_bag ${DEPENDENCY_LIST})
 #ament_target_dependencies(mando ${DEPENDENCY_LIST})
-add_executable(controller src/controller.cpp)
+add_executable(controller src/controller.cpp src/ros2_sport_client.cpp)
 target_compile_features(controller PRIVATE cxx_std_20)
 ament_target_dependencies(controller ${DEPENDENCY_LIST})
 
