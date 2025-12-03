@@ -9,11 +9,11 @@
 #include "unitree_go/msg/sport_mode_state.hpp"
 #include "sensor_msgs/msg/joy.hpp"
 
-enum action  {
+enum ACTION  {
     MOVE,
     STOP_MOVE,
 };
-
+ACTION action = STOP_MOVE;
 rclcpp::Logger my_logger = rclcpp::get_logger("my_controller");
 
 float vx = 0.3;
@@ -29,17 +29,17 @@ float vz = 0;
 void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
      
     if (msg->buttons[3] == 1) {
-        action == MOVE;       
+        action = MOVE;       
         RCLCPP_INFO(my_logger, "Mode: MOVE");
     }
 
    
     else if (msg->buttons[0] == 1) {
-        action == STOP_MOVE;  
+        action = STOP_MOVE;  
         RCLCPP_INFO(my_logger, "Mode: STOP_MOVE");
     }
     else{
-        action == STOP_MOVE;
+        action = STOP_MOVE;
         RCLCPP_INFO(my_logger, "No buttons detected");
     }
 }
@@ -47,13 +47,13 @@ void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
 void RobotControl(){
     switch(action){
         case MOVE:
-            sport_client.Move(req,vx,0,vz);
+            sport_client->Move(req,vx,0,vz);
             break;
         case STOP_MOVE:
-            sport_client.StopMove(req);
+            sport_client->StopMove(req);
             break;
         default:
-            sport_client.StopMove(req);
+            sport_client->StopMove(req);
     }
 
 }
@@ -61,6 +61,7 @@ void RobotControl(){
 
 
 unitree_api::msg::Request req; // Unitree Go2 ROS2 request message
+std::shared_ptr<SportClient> sport_client;
 
 int main(int argc, char* argv[]){
     rclcpp::init(argc,argv);
