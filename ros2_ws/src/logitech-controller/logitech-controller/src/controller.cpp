@@ -1,5 +1,5 @@
 /**********************************************************************
- David Román, Jaume I University
+ David Román Grijalbo, Jaume I University
 ***********************************************************************/
 
 #include <rclcpp/rclcpp.hpp>
@@ -29,17 +29,17 @@ float vz = 0;
 void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
      
     if (msg->buttons[3] == 1) {
-        test_mode_ = MOVE;       
+        action = MOVE;       
         RCLCPP_INFO(this->get_logger(), "Mode: MOVE");
     }
 
    
     else if (msg->buttons[0] == 1) {
-        test_mode_ = STOP_MOVE;  
+        action = STOP_MOVE;  
         RCLCPP_INFO(this->get_logger(), "Mode: STOP_MOVE");
     }
     else{
-        test_mode_ = STOP_MOVE;
+        action = STOP_MOVE;
         RCLCPP_INFO(this->get_logger(), "No buttons detected");
     }
 }
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]){
     auto node = rclcpp::Node::make_shared("controller_ros2_sport_client")
 
      // Servicio (cliente sport)
-    sport_client = std::make_shared<SportClient>(node.get()); // el servicio espera:  SportClient::SportClient(rclcpp::Node *node)
+    sport_client = std::make_shared<SportClient>(node.get()); // the srv is waiting for:  SportClient::SportClient(rclcpp::Node *node)
 
     auto subscriber = node -> create_publisher<sensor_msgs::msg::Joy>("joy",10,JoyCallback);
 
