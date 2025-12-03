@@ -60,28 +60,7 @@ ament_target_dependencies(controller ${DEPENDENCY_LIST})
 
 
 
-find_package(yaml-cpp QUIET)
-if(yaml-cpp_FOUND)
-    if (${yaml-cpp_VERSION} VERSION_GREATER_EQUAL "0.6")
-        message(STATUS "Found yaml-cpp version ${yaml-cpp_VERSION}")
-        add_executable(g1_dual_arm_example src/g1/lowlevel/g1_dual_arm_example.cpp src/common/motor_crc_hg.cpp)
-        target_compile_features(g1_dual_arm_example PRIVATE cxx_std_20)
-        ament_target_dependencies(g1_dual_arm_example yaml-cpp ${DEPENDENCY_LIST})
-    else()
-        message(STATUS "yaml-cpp version ${yaml-cpp_VERSION} is too old, skipping build of g1_dual_arm_example.")
-    endif()
-endif()
 
-install(TARGETS 
-//completar
-        DESTINATION)
-
-
-if(yaml-cpp_FOUND)
-    if (${yaml-cpp_VERSION} VERSION_GREATER_EQUAL "0.6")
-      install(TARGETS g1_dual_arm_example)
-    endif()
-endif()
 
 #install(TARGETS g1_audio_client_example)
 install(TARGETS
