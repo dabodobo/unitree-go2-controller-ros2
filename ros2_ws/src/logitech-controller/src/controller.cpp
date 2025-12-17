@@ -8,13 +8,15 @@
 #include "common/ros2_sport_client.h"
 #include "unitree_go/msg/sport_mode_state.hpp"
 #include "sensor_msgs/msg/joy.hpp"
-
+#include <string>
+#include <map>
 enum ACTION  {
     MOVE,
     STOP_MOVE,
+    HELLO,
 };
 ACTION action = STOP_MOVE;
-rclcpp::Logger my_logger = rclcpp::get_logger("my_controller");
+rclcpp::Logger my_logger = rclcpp::get_logger("CONTROLLER");
 
 float vx = 0.3;
 float vz = 0;
@@ -28,6 +30,25 @@ float vz = 0;
 */
 
 
+
+
+std::map<int, std::string> msgs = {
+    {0, "Mode: STOP_MOVE"},
+    {1, "Moving Straight"},
+    {2, "Moving Backwards"},
+    {3, "Moving Left"},
+    {4, "Moving Right"},
+    {5, "HI !"}
+};
+
+int last_msg = 0;
+int msg_type = 0;
+void msg_control(int &msg){
+    if(msg != last_msg){
+        RCLCPP_INFO(my_logger,msgs[msg]);
+        last_msg = msg;
+    }
+}
 void update_velocities(float x, float z){
     vx = x;
     vz = z;
@@ -38,27 +59,31 @@ void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
     if (msg->axes[1] > 0.4) {
         action = MOVE;  
         update_velocities(0.3,0);   
-        RCLCPP_INFO(my_logger, "Moving Straight");
+        msg_type = 1;
+        msg_control(msg_type);
     }
 
     // backwards
     else if (msg->axes[1] < -0.4) {
         action = MOVE;       
-        RCLCPP_INFO(my_logger, "Moving Backwards");
         update_velocities(-0.3,0);  
+        msg_type = 2;
+        msg_control(msg_type);
     }
     // left 
     else if(msg->axes[3] > 0.4) {
         action = MOVE;  
         update_velocities(0,0.6);   
-        RCLCPP_INFO(my_logger, "Moving Left");
+        msg_type = 3;
+        msg_control(msg_type);
     }
     
     //right
     else if(msg->axes[3] < -0.4) {
         action = MOVE;  
         update_velocities(0,-0.6);   
-        RCLCPP_INFO(my_logger, "Moving Right");
+        msg_type = 4;
+        msg_control(msg_type);
     }
 
 
@@ -66,11 +91,19 @@ void JoyCallback(sensor_msgs::msg::Joy::SharedPtr msg){
    
     else if (msg->buttons[0] == 1) {
         action = STOP_MOVE;  
-        RCLCPP_INFO(my_logger, "Mode: STOP_MOVE");
+        msg_type = 0;
+        msg_control(msg_type);
+    }
+
+    else if (msg->buttons[1] == 1) {
+        action = HELLO;  
+        msg_type = 5;
+        msg_control(msg_type);
     }
     else{
         action = STOP_MOVE;
         //RCLCPP_INFO(my_logger, "No buttons detected");
+        last_msg = 0;
     }
 }
 
@@ -82,8 +115,12 @@ void RobotControl(unitree_api::msg::Request req,std::shared_ptr<SportClient> spo
         case STOP_MOVE:
             sport_client->StopMove(req);
             break;
+        case HELLO:
+            sport_client->Hello(req);
+            break;
         default:
             sport_client->StopMove(req);
+            break;
     }
 
 }
