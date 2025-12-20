@@ -25,7 +25,7 @@ Make source:
     
     source install/setup.bash
 
-Finally we launch the program that program that reads the joysticks and publish the movement of our robot:
+Finally we launch the program that reads the joysticks and publish the movement of our robot:
 
     ros2 launch logitech-controler controller.launch.py
 
